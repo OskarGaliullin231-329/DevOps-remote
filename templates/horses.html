@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Horses - Horse Racing Management{% endblock %}
+
+{% block content %}
+    <h2>Horses</h2>
+    
+    <div class="form-actions" style="margin-top: 20px; margin-bottom: 30px;">
+        <a href="{{ url_for('add_horse') }}" class="btn">+ Add Horse</a>
+    </div>
+    
+    {% if horses %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Owner</th>
+                    <th>Rating</th>
+                    <th>Races Participated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for horse in horses %}
+                    <tr>
+                        <td>
+                            <strong>{{ horse.name }}</strong>
+                        </td>
+                        <td>
+                            {{ horse.owner.name if horse.owner else 'N/A' }}
+                        </td>
+                        <td>
+                            <span class="rating">★ {{ "%.1f"|format(horse.rating) }}</span>
+                        </td>
+                        <td>
+                            {{ horse.race_entries|length }} races
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🐎</div>
+            <p>No horses available</p>
+            <p><a href="{{ url_for('add_horse') }}" class="btn">Add a horse</a></p>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Race Results - Horse Racing Management{% endblock %}
+
+{% block content %}
+    <h2>Edit Race Results</h2>
+    
+    <div class="card">
+        <div class="card-title">📅 Race Date</div>
+        <p style="font-size: 1.2em; margin: 10px 0;">
+            <strong>{{ race.date.strftime('%B %d, %Y at %H:%M') }}</strong>
+        </p>
+    </div>
+    
+    <h3 style="margin-top: 30px; margin-bottom: 20px;">Enter Placements</h3>
+    
+    <form method="POST" style="max-width: 900px;">
+        {% if race.entries %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Horse</th>
+                        <th>Owner</th>
+                        <th>Jockey</th>
+                        <th>Placement</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in race.entries %}
+                        <tr>
+                            <td>
+                                <strong>{{ entry.horse.name }}</strong>
+                            </td>
+                            <td>
+                                {{ entry.horse.owner.name if entry.horse.owner else 'N/A' }}
+                            </td>
+                            <td>
+                                <strong>{{ entry.jockey.name }}</strong>
+                            </td>
+                            <td>
+                                <input type="number" 
+                                       name="place_{{ entry.id }}" 
+                                       min="1" 
+                                       value="{{ entry.place if entry.place else '' }}" 
+                                       placeholder="Place (1, 2, 3...)" 
+                                       style="width: 100px; padding: 8px;">
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <p>No participants in this race</p>
+            </div>
+        {% endif %}
+        
+        <div class="form-actions" style="margin-top: 30px;">
+            <button type="submit" class="btn">Save Results</button>
+            <a href="{{ url_for('race_detail', race_id=race.id) }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+{% endblock %}

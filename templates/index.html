@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Races - Horse Racing Management{% endblock %}
+
+{% block content %}
+    <h2>All Races</h2>
+    
+    <div class="form-actions" style="margin-top: 20px; margin-bottom: 30px;">
+        <a href="{{ url_for('add_race') }}" class="btn">+ New Race</a>
+    </div>
+    
+    {% if races %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Entries</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for race in races %}
+                    <tr>
+                        <td>
+                            <strong>{{ race.date.strftime('%Y-%m-%d %H:%M') }}</strong>
+                        </td>
+                        <td>
+                            {{ race.entries|length }} participants
+                        </td>
+                        <td>
+                            {% set finished = race.entries|selectattr('place')|list|length > 0 %}
+                            {% if finished and race.entries|selectattr('place')|list|length == race.entries|length %}
+                                <span class="badge badge-success">Finished</span>
+                            {% elif finished %}
+                                <span class="badge badge-warning">In Progress</span>
+                            {% else %}
+                                <span class="badge">Scheduled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('race_detail', race_id=race.id) }}" class="btn" style="padding: 8px 15px; font-size: 0.9em;">View</a>
+                            <a href="{{ url_for('edit_race_results', race_id=race.id) }}" class="btn btn-secondary" style="padding: 8px 15px; font-size: 0.9em;">Edit Results</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🏁</div>
+            <p>No races scheduled yet</p>
+            <p><a href="{{ url_for('add_race') }}" class="btn">Create the first race</a></p>
+        </div>
+    {% endif %}
+{% endblock %}

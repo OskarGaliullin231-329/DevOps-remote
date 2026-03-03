@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Race - Horse Racing Management{% endblock %}
+
+{% block content %}
+    <h2>Create New Race</h2>
+    
+    <form method="POST" style="max-width: 900px; margin-top: 30px;">
+        <div class="form-group">
+            <label for="date">Race Date & Time *</label>
+            <input type="datetime-local" id="date" name="date" required>
+        </div>
+        
+        <h3 style="margin-top: 30px; margin-bottom: 20px;">Race Participants</h3>
+        <p style="color: #666; margin-bottom: 20px;">Add horse-jockey pairs for this race. Add at least one pair.</p>
+        
+        <div id="entries-container">
+            {% for i in range(3) %}
+                <div class="card" id="entry-{{ i }}">
+                    <h4 style="margin-bottom: 15px;">Participant {{ i + 1 }}</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="horse_{{ i }}">Horse</label>
+                            <select id="horse_{{ i }}" name="horse_{{ i }}">
+                                <option value="">Select horse...</option>
+                                {% for horse in horses %}
+                                    <option value="{{ horse.id }}">{{ horse.name }} - Rating: {{ "%.1f"|format(horse.rating) }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="jockey_{{ i }}">Jockey</label>
+                            <select id="jockey_{{ i }}" name="jockey_{{ i }}">
+                                <option value="">Select jockey...</option>
+                                {% for jockey in jockeys %}
+                                    <option value="{{ jockey.id }}">{{ jockey.name }} - Rating: {{ "%.1f"|format(jockey.rating) }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <button type="button" id="add-entry-btn" class="btn btn-secondary" style="margin-top: 20px; margin-bottom: 30px;">+ Add More Participants</button>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn">Create Race</button>
+            <a href="{{ url_for('races') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+    
+    {% if not horses or not jockeys %}
+        <div class="alert alert-info" style="margin-top: 20px;">
+            <strong>Note:</strong> 
+            {% if not horses %}
+                You need to <a href="{{ url_for('add_horse') }}">add horses</a>
+            {% endif %}
+            {% if not horses and not jockeys %} and {% endif %}
+            {% if not jockeys %}
+                <a href="{{ url_for('add_jockey') }}">add jockeys</a>
+            {% endif %}
+            before creating a race.
+        </div>
+    {% endif %}
+    
+    <script>
+        let entryCount = 3;
+        
+        document.getElementById('add-entry-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const container = document.getElementById('entries-container');
+            const newEntry = document.createElement('div');
+            newEntry.className = 'card';
+            newEntry.id = 'entry-' + entryCount;
+            
+            newEntry.innerHTML = `
+                <h4 style="margin-bottom: 15px;">Participant ${entryCount + 1}
+                    <button type="button" onclick="document.getElementById('entry-${entryCount}').remove()" class="btn btn-danger" style="float: right; padding: 5px 10px; font-size: 0.9em;">Remove</button>
+                </h4>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="horse_${entryCount}">Horse</label>
+                        <select id="horse_${entryCount}" name="horse_${entryCount}">
+                            <option value="">Select horse...</option>
+                            {% for horse in horses %}
+                                <option value="{{ horse.id }}">{{ horse.name }} - Rating: {{ "%.1f"|format(horse.rating) }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="jockey_${entryCount}">Jockey</label>
+                        <select id="jockey_${entryCount}" name="jockey_${entryCount}">
+                            <option value="">Select jockey...</option>
+                            {% for jockey in jockeys %}
+                                <option value="{{ jockey.id }}">{{ jockey.name }} - Rating: {{ "%.1f"|format(jockey.rating) }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(newEntry);
+            entryCount++;
+        });
+    </script>
+{% endblock %}

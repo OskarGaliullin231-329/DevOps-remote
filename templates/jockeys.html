@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Jockeys - Horse Racing Management{% endblock %}
+
+{% block content %}
+    <h2>Jockeys</h2>
+    
+    <div class="form-actions" style="margin-top: 20px; margin-bottom: 30px;">
+        <a href="{{ url_for('add_jockey') }}" class="btn">+ Add Jockey</a>
+    </div>
+    
+    {% if jockeys %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Rating</th>
+                    <th>Races Participated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for jockey in jockeys %}
+                    <tr>
+                        <td>
+                            <strong>{{ jockey.name }}</strong>
+                        </td>
+                        <td>
+                            <span class="rating">★ {{ "%.1f"|format(jockey.rating) }}</span>
+                        </td>
+                        <td>
+                            {{ jockey.race_entries|length }} races
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">🤠</div>
+            <p>No jockeys available</p>
+            <p><a href="{{ url_for('add_jockey') }}" class="btn">Add a jockey</a></p>
+        </div>
+    {% endif %}
+{% endblock %}

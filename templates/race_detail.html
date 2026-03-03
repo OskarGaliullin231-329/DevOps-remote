@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}Race Details - Horse Racing Management{% endblock %}
+
+{% block content %}
+    <h2>Race Details</h2>
+    
+    <div class="card">
+        <div class="card-title">📅 Race Date</div>
+        <p style="font-size: 1.2em; margin: 10px 0;">
+            <strong>{{ race.date.strftime('%B %d, %Y at %H:%M') }}</strong>
+        </p>
+    </div>
+    
+    <div class="card">
+        <div class="card-title">🏆 Participants & Results</div>
+        
+        {% set finished_count = race.entries|selectattr('place')|list|length %}
+        {% set total_count = race.entries|length %}
+        
+        {% if finished_count > 0 %}
+            <div style="text-align: center; margin-bottom: 20px;">
+                {% if finished_count == total_count %}
+                    <span class="badge badge-success" style="font-size: 1.1em;">✓ Race Finished</span>
+                {% else %}
+                    <span class="badge badge-warning" style="font-size: 1.1em;">⊙ Results: {{ finished_count }}/{{ total_count }} completed</span>
+                {% endif %}
+            </div>
+        {% else %}
+            <div style="text-align: center; margin-bottom: 20px;">
+                <span class="badge" style="font-size: 1.1em;">Race scheduled</span>
+            </div>
+        {% endif %}
+        
+        {% if race.entries %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Placement</th>
+                        <th>Horse</th>
+                        <th>Owner</th>
+                        <th>Jockey</th>
+                        <th>Horse Rating</th>
+                        <th>Jockey Rating</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set sorted_entries = race.entries|sort(attribute='place', reverse=False) %}
+                    {% for entry in sorted_entries %}
+                        <tr>
+                            <td>
+                                {% if entry.place %}
+                                    <span class="place-badge place-{{ entry.place }}">
+                                        {% if entry.place == 1 %}🥇{% elif entry.place == 2 %}🥈{% elif entry.place == 3 %}🥉{% else %}{{ entry.place }}{% endif %} {{ entry.place }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <strong>{{ entry.horse.name }}</strong>
+                            </td>
+                            <td>
+                                {{ entry.horse.owner.name if entry.horse.owner else 'N/A' }}
+                            </td>
+                            <td>
+                                <strong>{{ entry.jockey.name }}</strong>
+                            </td>
+                            <td>
+                                <span class="rating">★ {{ "%.1f"|format(entry.horse.rating) }}</span>
+                            </td>
+                            <td>
+                                <span class="rating">★ {{ "%.1f"|format(entry.jockey.rating) }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <p>No participants in this race</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="form-actions" style="margin-top: 30px;">
+        <a href="{{ url_for('edit_race_results', race_id=race.id) }}" class="btn">Edit Results</a>
+        <a href="{{ url_for('races') }}" class="btn btn-secondary">Back to Races</a>
+    </div>
+{% endblock %}

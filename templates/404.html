@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Page Not Found - Horse Racing Management{% endblock %}
+
+{% block content %}
+    <div class="text-center" style="padding: 60px 20px;">
+        <div style="font-size: 4em; margin-bottom: 20px;">😕</div>
+        <h2>Page Not Found (404)</h2>
+        <p style="margin-top: 20px; color: #666; font-size: 1.1em;">
+            The page you're looking for doesn't exist.
+        </p>
+        <a href="{{ url_for('index') }}" class="btn" style="margin-top: 30px;">Back to Home</a>
+    </div>
+{% endblock %}
