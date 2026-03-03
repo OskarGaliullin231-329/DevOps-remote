@@ -106,27 +106,27 @@ app/
 ├── models.py                 # SQLAlchemy models
 ├── config.py                 # Configuration
 ├── requirements.txt          # Python dependencies
-├── alembic.ini              # Alembic configuration
-├── alembic/
-│   ├── env.py               # Alembic environment setup
-│   ├── script.py.mako       # Migration template
+├── alembic.ini               # Alembic configuration (points to migrations/)
+├── migrations/               # Migration files (was alembic/)
+│   ├── env.py                # Alembic environment setup
+│   ├── script.py.mako        # Migration template
 │   └── versions/
-│       └── 001_initial.py   # Initial migration
-└── templates/               # Jinja2 templates
-    ├── base.html            # Base template
-    ├── index.html           # Home page
-    ├── horses.html          # Horses list
-    ├── add_horse.html       # Add horse form
-    ├── jockeys.html         # Jockeys list
-    ├── add_jockey.html      # Add jockey form
-    ├── owners.html          # Owners list
-    ├── add_owner.html       # Add owner form
-    ├── races.html           # Races list
-    ├── add_race.html        # Create race form
-    ├── race_detail.html     # Race details
-    ├── edit_race_results.html # Edit race placements
-    ├── 404.html             # 404 error page
-    └── 500.html             # 500 error page
+│       └── 001_initial.py    # Initial migration
+└── templates/                # Jinja2 templates
+   ├── base.html             # Base template
+   ├── index.html            # Home page
+   ├── horses.html           # Horses list
+   ├── add_horse.html        # Add horse form
+   ├── jockeys.html          # Jockeys list
+   ├── add_jockey.html       # Add jockey form
+   ├── owners.html           # Owners list
+   ├── add_owner.html        # Add owner form
+   ├── races.html            # Races list
+   ├── add_race.html         # Create race form
+   ├── race_detail.html      # Race details
+   ├── edit_race_results.html# Edit race placements
+   ├── 404.html              # 404 error page
+   └── 500.html              # 500 error page
 ```
 
 ## Usage Examples
@@ -193,3 +193,21 @@ The application includes:
 ## License
 
 This is a demonstration project. Use freely for educational purposes.
+
+## Docker
+
+The repository includes a `Dockerfile` and `docker-compose.yml` to run the application in containers:
+
+- `web` (Python 3.14 slim) — runs Gunicorn serving the Flask app
+- `db` (Postgres 17 Alpine) — database
+- `nginx` (Alpine) — reverse-proxy in front of Gunicorn
+
+Quick start (from project root):
+
+```bash
+cp .env.example .env    # edit secrets
+docker compose build
+docker compose up -d
+```
+
+The app will be exposed on port 80 (nginx).
