@@ -348,7 +348,7 @@
                 <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Races</a></li>
                 <li><a href="{{ url_for('horses') }}" class="{% if request.endpoint in ['horses', 'add_horse'] %}active{% endif %}">Horses</a></li>
                 <li><a href="{{ url_for('jockeys') }}" class="{% if request.endpoint in ['jockeys', 'add_jockey'] %}active{% endif %}">Jockeys</a></li>
-                <li><a href="{{ url_for('owners') }}" class="{% if request.endpoint in ['owners', 'add_owner'] %}active{% endif %}">Owners</a></li>
+                <li><a href="{{ url_for('hosts') }}" class="{% if request.endpoint in ['hosts', 'add_host'] %}active{% endif %}">Hosts</a></li>
                 <li><a href="{{ url_for('add_race') }}" class="{% if request.endpoint == 'add_race' %}active{% endif %}">New Race</a></li>
             </ul>
         </nav>

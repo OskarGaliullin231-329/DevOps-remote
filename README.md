@@ -52,15 +52,34 @@ pip install -r requirements.txt
 
 ### 2. Initialize the Database
 
-The application uses Alembic for database migrations. To set up the database:
+The project includes a helper SQL script at `db/init_db.sql` which
+creates a PostgreSQL database named `horse_races` and a user
+`horse_races_admin`.  The application is configured by default to
+connect using that user; the connection string is built from
+`DB_USER`, `DB_PASS`, `DB_HOST`, `DB_PORT` and `DB_NAME` environment
+variables, or you can set the complete `DATABASE_URL` yourself.
+
+Run the initialization script before starting the app:
 
 ```bash
-# Create the database and run migrations
-flask db upgrade
+# this requires access to a postgres superuser (the default script
+# connects as the "postgres" OS user)
+# if the database already exists, you may need to drop it first:
+# psql -U postgres -c "DROP DATABASE horse_races;"
+psql -U postgres -f db/init_db.sql
+```
 
-# Or manually run the app (will create db.sqlite if needed)
+After the database exists you can apply migrations in the usual way:
+
+```bash
+flask db upgrade            # create tables/columns
+# or simply start the application, it will also call create_all()
 python app.py
 ```
+
+If you do not have PostgreSQL installed or prefer to work with
+SQLite, simply ensure `DATABASE_URL` points to ``sqlite:///horse_races.db``
+and running the application will create the file and tables as needed.
 
 ### 3. Run the Application
 
@@ -185,10 +204,13 @@ The application includes:
 
 ## Notes
 
-- The application uses SQLite by default (`horse_races.db`)
-- To use a different database (PostgreSQL, MySQL, etc.), update `SQLALCHEMY_DATABASE_URI` in `config.py`
-- All horse and jockey names must be unique
-- Race participants are unique per race (same horse-jockey pair cannot be added twice)
+- The application now defaults to a PostgreSQL database created via
+  `db/init_db.sql` but will still run against SQLite if PostgreSQL is
+  not available.
+- To use a different database, set the `DATABASE_URL` environment
+  variable or adjust the values in `config.py`.
+- All horse and jockey names must be unique.
+- Race participants are unique per race (same horse-jockey pair cannot be added twice).
 
 ## License
 

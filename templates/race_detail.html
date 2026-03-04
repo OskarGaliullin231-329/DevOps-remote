@@ -15,8 +15,8 @@
     <div class="card">
         <div class="card-title">🏆 Participants & Results</div>
         
-        {% set finished_count = race.entries|selectattr('place')|list|length %}
-        {% set total_count = race.entries|length %}
+        {% set finished_count = race.results|selectattr('place')|list|length %}
+        {% set total_count = race.results|length %}
         
         {% if finished_count > 0 %}
             <div style="text-align: center; margin-bottom: 20px;">
@@ -32,20 +32,20 @@
             </div>
         {% endif %}
         
-        {% if race.entries %}
+        {% if race.results %}
             <table>
                 <thead>
                     <tr>
                         <th>Placement</th>
                         <th>Horse</th>
-                        <th>Owner</th>
+                        <th>Host</th>
                         <th>Jockey</th>
                         <th>Horse Rating</th>
                         <th>Jockey Rating</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% set sorted_entries = race.entries|sort(attribute='place', reverse=False) %}
+                    {% set sorted_entries = race.results|sort(attribute='place', reverse=False) %}
                     {% for entry in sorted_entries %}
                         <tr>
                             <td>
@@ -61,7 +61,7 @@
                                 <strong>{{ entry.horse.name }}</strong>
                             </td>
                             <td>
-                                {{ entry.horse.owner.name if entry.horse.owner else 'N/A' }}
+                                {{ entry.horse.host.name if entry.horse.host else 'N/A' }}
                             </td>
                             <td>
                                 <strong>{{ entry.jockey.name }}</strong>

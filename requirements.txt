@@ -4,3 +4,5 @@ Flask-Migrate==4.0.5
 SQLAlchemy==2.0.48
 Alembic==1.13.1
 python-dateutil==2.8.2
+psycopg[binary]
+gunicorn==24.1.0

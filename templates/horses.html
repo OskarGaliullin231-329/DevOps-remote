@@ -14,7 +14,7 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Owner</th>
+                    <th>Host</th>
                     <th>Rating</th>
                     <th>Races Participated</th>
                 </tr>
@@ -26,13 +26,13 @@
                             <strong>{{ horse.name }}</strong>
                         </td>
                         <td>
-                            {{ horse.owner.name if horse.owner else 'N/A' }}
+                            {{ horse.host.name if horse.host else 'N/A' }}
                         </td>
                         <td>
                             <span class="rating">★ {{ "%.1f"|format(horse.rating) }}</span>
                         </td>
                         <td>
-                            {{ horse.race_entries|length }} races
+                            {{ horse.results|length }} races
                         </td>
                     </tr>
                 {% endfor %}

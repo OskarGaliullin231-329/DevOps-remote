@@ -5,7 +5,7 @@ Run with: python init_data.py
 """
 
 from app import app, db
-from models import Owner, Horse, Jockey, Race, RaceEntry
+from models import Host, Horse, Jockey, Race, RaceResult
 from datetime import datetime, timedelta
 
 def init_sample_data():
@@ -13,39 +13,39 @@ def init_sample_data():
     
     with app.app_context():
         # Check if data already exists
-        if Owner.query.first() is not None:
+        if Host.query.first() is not None:
             print("Database already contains data. Skipping initialization.")
             return
         
         print("Initializing sample data...")
         
-        # Create owners
-        owners = [
-            Owner(name="John Smith"),
-            Owner(name="Sarah Johnson"),
-            Owner(name="Michael Brown"),
-            Owner(name="Emma Wilson"),
+        # Create hosts
+        hosts = [
+            Host(host_name="John", surname="Smith"),
+            Host(host_name="Sarah", surname="Johnson"),
+            Host(host_name="Michael", surname="Brown"),
+            Host(host_name="Emma", surname="Wilson"),
         ]
-        for owner in owners:
-            db.session.add(owner)
+        for host in hosts:
+            db.session.add(host)
         db.session.commit()
-        print(f"✓ Created {len(owners)} owners")
+        print(f"✓ Created {len(hosts)} hosts")
         
         # Create horses
         horses_data = [
-            ("Thunder", 8.5, owners[0]),
-            ("Lightning", 7.8, owners[0]),
-            ("Midnight", 9.2, owners[1]),
-            ("Sunset", 7.5, owners[1]),
-            ("Storm", 8.9, owners[2]),
-            ("Golden Dream", 8.3, owners[2]),
-            ("Silver Moon", 8.1, owners[3]),
-            ("Wind Dance", 7.9, owners[3]),
+            ("Thunder", 8, hosts[0]),
+            ("Lightning", 8, hosts[0]),
+            ("Midnight", 9, hosts[1]),
+            ("Sunset", 8, hosts[1]),
+            ("Storm", 9, hosts[2]),
+            ("Golden Dream", 8, hosts[2]),
+            ("Silver Moon", 8, hosts[3]),
+            ("Wind Dance", 8, hosts[3]),
         ]
         
         horses = []
-        for name, rating, owner in horses_data:
-            horse = Horse(name=name, rating=rating, owner=owner)
+        for name, rating, host in horses_data:
+            horse = Horse(horse_name=name, rating=rating, host_id=host.id)
             horses.append(horse)
             db.session.add(horse)
         db.session.commit()
@@ -53,17 +53,17 @@ def init_sample_data():
         
         # Create jockeys
         jockeys_data = [
-            ("James Lewis", 8.7),
-            ("Maria Garcia", 9.1),
-            ("David Wilson", 8.4),
-            ("Anna Martinez", 8.8),
-            ("Robert Taylor", 7.9),
-            ("Catherine Anderson", 8.6),
+            ("James Lewis", 9),
+            ("Maria Garcia", 9),
+            ("David Wilson", 8),
+            ("Anna Martinez", 9),
+            ("Robert Taylor", 8),
+            ("Catherine Anderson", 9),
         ]
         
         jockeys = []
         for name, rating in jockeys_data:
-            jockey = Jockey(name=name, rating=rating)
+            jockey = Jockey(jockey_name=name, rating=rating)
             jockeys.append(jockey)
             db.session.add(jockey)
         db.session.commit()
@@ -73,42 +73,42 @@ def init_sample_data():
         base_date = datetime.now() - timedelta(days=10)
         
         # Race 1 - Finished
-        race1 = Race(date=base_date)
+        race1 = Race(race_date=base_date.date())
         db.session.add(race1)
         db.session.flush()
         
         race1_entries = [
-            RaceEntry(race=race1, horse=horses[0], jockey=jockeys[0], place=1),
-            RaceEntry(race=race1, horse=horses[1], jockey=jockeys[1], place=2),
-            RaceEntry(race=race1, horse=horses[2], jockey=jockeys[2], place=3),
-            RaceEntry(race=race1, horse=horses[3], jockey=jockeys[3], place=4),
+            RaceResult(race_id=race1.id, horse_id=horses[0].id, jockey_id=jockeys[0].id, place=1),
+            RaceResult(race_id=race1.id, horse_id=horses[1].id, jockey_id=jockeys[1].id, place=2),
+            RaceResult(race_id=race1.id, horse_id=horses[2].id, jockey_id=jockeys[2].id, place=3),
+            RaceResult(race_id=race1.id, horse_id=horses[3].id, jockey_id=jockeys[3].id, place=4),
         ]
         for entry in race1_entries:
             db.session.add(entry)
         
         # Race 2 - Finished
-        race2 = Race(date=base_date + timedelta(days=2))
+        race2 = Race(race_date=(base_date + timedelta(days=2)).date())
         db.session.add(race2)
         db.session.flush()
         
         race2_entries = [
-            RaceEntry(race=race2, horse=horses[4], jockey=jockeys[4], place=1),
-            RaceEntry(race=race2, horse=horses[5], jockey=jockeys[5], place=2),
-            RaceEntry(race=race2, horse=horses[6], jockey=jockeys[0], place=3),
-            RaceEntry(race=race2, horse=horses[7], jockey=jockeys[1], place=4),
+            RaceResult(race_id=race2.id, horse_id=horses[4].id, jockey_id=jockeys[4].id, place=1),
+            RaceResult(race_id=race2.id, horse_id=horses[5].id, jockey_id=jockeys[5].id, place=2),
+            RaceResult(race_id=race2.id, horse_id=horses[6].id, jockey_id=jockeys[0].id, place=3),
+            RaceResult(race_id=race2.id, horse_id=horses[7].id, jockey_id=jockeys[1].id, place=4),
         ]
         for entry in race2_entries:
             db.session.add(entry)
         
         # Race 3 - Scheduled (no results)
-        race3 = Race(date=datetime.now() + timedelta(days=5))
+        race3 = Race(race_date=(datetime.now() + timedelta(days=5)).date())
         db.session.add(race3)
         db.session.flush()
         
         race3_entries = [
-            RaceEntry(race=race3, horse=horses[0], jockey=jockeys[2], place=None),
-            RaceEntry(race=race3, horse=horses[3], jockey=jockeys[4], place=None),
-            RaceEntry(race=race3, horse=horses[5], jockey=jockeys[1], place=None),
+            RaceResult(race_id=race3.id, horse_id=horses[0].id, jockey_id=jockeys[2].id, place=1),
+            RaceResult(race_id=race3.id, horse_id=horses[3].id, jockey_id=jockeys[4].id, place=2),
+            RaceResult(race_id=race3.id, horse_id=horses[5].id, jockey_id=jockeys[1].id, place=3),
         ]
         for entry in race3_entries:
             db.session.add(entry)
@@ -118,7 +118,7 @@ def init_sample_data():
         
         print("\n✅ Sample data initialization complete!")
         print("\nYou can now log in and see:")
-        print(f"  - {len(owners)} owners")
+        print(f"  - {len(hosts)} hosts")
         print(f"  - {len(horses)} horses")
         print(f"  - {len(jockeys)} jockeys")
         print(f"  - 3 races (2 finished, 1 scheduled)")

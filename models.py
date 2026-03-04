@@ -1,73 +1,106 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+# the models used by the application are now a direct reflection of the
+# tables created by `db/init_db.sql`.  column names are chosen so that
+# they match the SQL script exactly; helper properties are provided for
+# backwards compatibility with some of the original code.
+
 db = SQLAlchemy()
 
 
-class Owner(db.Model):
-    """Horse owner model"""
-    __tablename__ = 'owners'
+class Host(db.Model):
+    """Application owner/host model corresponding to the ``hosts`` table.
+
+    This table stores ``host_name`` and ``surname`` separately.  The
+    ``name`` property returns the two concatenated with a space so the
+    rest of the app can continue using ``host.name`` as before.
+    """
+    __tablename__ = 'hosts'
     
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=True)
-    horses = db.relationship('Horse', backref='owner', lazy=True)
+    host_name = db.Column(db.String(255))
+    surname = db.Column(db.String(255))
+    
+    horses = db.relationship('Horse', backref='host', lazy=True)
+    
+    @property
+    def name(self):
+        parts = [self.host_name or '']
+        if self.surname:
+            parts.append(self.surname)
+        return ' '.join(p for p in parts if p).strip()
     
     def __repr__(self):
-        return f'<Owner {self.name}>'
+        return f'<Host {self.name}>'
 
 
 class Horse(db.Model):
-    """Horse model"""
+    """Horse model corresponding to the ``horses`` table."""
     __tablename__ = 'horses'
     
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=True)
-    rating = db.Column(db.Float, default=0.0, nullable=False)
-    owner_id = db.Column(db.Integer, db.ForeignKey('owners.id'), nullable=False)
-    race_entries = db.relationship('RaceEntry', backref='horse', lazy=True)
+    host_id = db.Column(db.Integer, db.ForeignKey('hosts.id'), nullable=False)
+    horse_name = db.Column(db.String(255), nullable=False)
+    rating = db.Column(db.Integer)
+    
+    results = db.relationship('RaceResult', backref='horse', lazy=True)
+    
+    @property
+    def name(self):
+        return self.horse_name
     
     def __repr__(self):
-        return f'<Horse {self.name}>'
+        return f'<Horse {self.horse_name}>'
 
 
 class Jockey(db.Model):
-    """Jockey model"""
+    """Jockey model corresponding to the ``jockeys`` table."""
     __tablename__ = 'jockeys'
     
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=True)
-    rating = db.Column(db.Float, default=0.0, nullable=False)
-    race_entries = db.relationship('RaceEntry', backref='jockey', lazy=True)
+    jockey_name = db.Column(db.String(255), nullable=False)
+    rating = db.Column(db.Integer)
+    
+    results = db.relationship('RaceResult', backref='jockey', lazy=True)
+    
+    @property
+    def name(self):
+        return self.jockey_name
     
     def __repr__(self):
-        return f'<Jockey {self.name}>'
+        return f'<Jockey {self.jockey_name}>'
 
 
 class Race(db.Model):
-    """Race model"""
+    """Race model corresponding to the ``races`` table."""
     __tablename__ = 'races'
     
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    entries = db.relationship('RaceEntry', backref='race', lazy=True, cascade='all, delete-orphan')
+    race_date = db.Column(db.Date, nullable=False)
+    
+    results = db.relationship('RaceResult', backref='race', lazy=True, cascade='all, delete-orphan')
+    
+    @property
+    def date(self):
+        # keep compatibility with existing templates that expect ``date``
+        # to be a datetime-like object; convert the stored date to a
+        # datetime at midnight.
+        return datetime(self.race_date.year, self.race_date.month, self.race_date.day)
     
     def __repr__(self):
-        return f'<Race {self.date}>'
+        return f'<Race {self.race_date}>'
 
 
-class RaceEntry(db.Model):
-    """Many-to-many relationship: Race - Jockey - Horse with placement"""
-    __tablename__ = 'race_entries'
+class RaceResult(db.Model):
+    """Mapping of horses and jockeys to races (``races_results`` table)."""
+    __tablename__ = 'races_results'
     
     id = db.Column(db.Integer, primary_key=True)
-    race_id = db.Column(db.Integer, db.ForeignKey('races.id'), nullable=False)
-    jockey_id = db.Column(db.Integer, db.ForeignKey('jockeys.id'), nullable=False)
     horse_id = db.Column(db.Integer, db.ForeignKey('horses.id'), nullable=False)
-    place = db.Column(db.Integer, nullable=True)  # None if race not finished
-    
-    __table_args__ = (
-        db.UniqueConstraint('race_id', 'jockey_id', 'horse_id', name='unique_race_entry'),
-    )
+    jockey_id = db.Column(db.Integer, db.ForeignKey('jockeys.id'), nullable=False)
+    race_id = db.Column(db.Integer, db.ForeignKey('races.id'), nullable=False)
+    place = db.Column(db.Integer, nullable=True)
     
     def __repr__(self):
-        return f'<RaceEntry race:{self.race_id} jockey:{self.jockey_id} horse:{self.horse_id}>'
+        return f'<RaceResult race:{self.race_id} jockey:{self.jockey_id} horse:{self.horse_id}>'

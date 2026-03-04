@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}Owners - Horse Racing Management{% endblock %}
+{% block title %}Hosts - Horse Racing Management{% endblock %}
 
 {% block content %}
-    <h2>Horse Owners</h2>
+    <h2>Horse Hosts</h2>
     
     <div class="form-actions" style="margin-top: 20px; margin-bottom: 30px;">
-        <a href="{{ url_for('add_owner') }}" class="btn">+ Add Owner</a>
+        <a href="{{ url_for('add_host') }}" class="btn">+ Add Host</a>
     </div>
     
-    {% if owners %}
+    {% if hosts %}
         <table>
             <thead>
                 <tr>
@@ -18,13 +18,13 @@
                 </tr>
             </thead>
             <tbody>
-                {% for owner in owners %}
+                {% for host in hosts %}
                     <tr>
                         <td>
-                            <strong>{{ owner.name }}</strong>
+                            <strong>{{ host.name }}</strong>
                         </td>
                         <td>
-                            {{ owner.horses|length }} horses
+                            {{ host.horses|length }} horses
                         </td>
                     </tr>
                 {% endfor %}
@@ -33,8 +33,8 @@
     {% else %}
         <div class="empty-state">
             <div class="empty-state-icon">👤</div>
-            <p>No owners available</p>
-            <p><a href="{{ url_for('add_owner') }}" class="btn">Add an owner</a></p>
+            <p>No hosts available</p>
+            <p><a href="{{ url_for('add_host') }}" class="btn">Add a host</a></p>
         </div>
     {% endif %}
 {% endblock %}
