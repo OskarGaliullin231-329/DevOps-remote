@@ -49,3 +49,5 @@ instance/
 
 # Alembic
 alembic/versions/*.pyc
+
+.ssh
