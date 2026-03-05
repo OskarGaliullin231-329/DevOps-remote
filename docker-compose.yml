@@ -1,0 +1,66 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    container_name: horse_races_db
+    environment:
+      POSTGRES_DB: horse_races
+      POSTGRES_USER: horse_races_admin
+      POSTGRES_PASSWORD: hr_pass
+      POSTGRES_INITDB_ARGS: "--encoding UTF8"
+    ports:
+      - "9000:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U horse_races_admin -d horse_races"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: horse_races_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_USER: horse_races_admin
+      DB_PASS: hr_pass
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: horse_races
+      PYTHONUNBUFFERED: 1
+      FLASK_ENV: production
+    volumes:
+      - ./templates:/app/templates
+      - ./static:/app/static
+    networks:
+      - app_network
+    expose:
+      - 5000
+
+  nginx:
+    image: nginx:alpine
+    container_name: horse_races_nginx
+    depends_on:
+      - app
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - app_network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  app_network:
+    driver: bridge
