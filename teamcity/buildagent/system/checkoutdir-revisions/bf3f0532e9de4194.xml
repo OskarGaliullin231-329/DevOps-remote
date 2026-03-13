@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CheckoutDirectoryState>
+  <VcsSettingsHash>bf3f0532e9de4194</VcsSettingsHash>
+  <CheckoutDirPath>bf3f0532e9de4194</CheckoutDirPath>
+  <BuildHistory>
+    <Build>
+      <BuildTypeId>bt1</BuildTypeId>
+      <BuildId>102</BuildId>
+    </Build>
+  </BuildHistory>
+  <VcsRoots>
+    <VcsRoot>
+      <VcsRootSettings>bfe632de1e787a2c</VcsRootSettings>
+      <Revision>b1f938011f3e7e1566dbdac577f88b3bf59e8542</Revision>
+      <CheckoutRules />
+    </VcsRoot>
+  </VcsRoots>
+</CheckoutDirectoryState>
+

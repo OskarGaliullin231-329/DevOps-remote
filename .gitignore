@@ -49,8 +49,3 @@ instance/
 
 # Alembic
 alembic/versions/*.pyc
-
-# TeamCity data
-teamcity
-
-.ssh
