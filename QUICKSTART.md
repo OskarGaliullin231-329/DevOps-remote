@@ -16,17 +16,38 @@ pip install -r requirements.txt
 
 ### Step 2: Initialize Database
 
-The application will automatically create the SQLite database when you run it for the first time.
+A helper SQL script (`db/init_db.sql`) is provided for PostgreSQL – it
+creates the `horse_races` database, a `horse_races_admin` user, and
+all of the tables.  Make sure you have `psql` installed and run:
 
-To create the database manually:
+```bash
+psql -U postgres -f db/init_db.sql
+```
+
+If the database already exists, drop it first:
+```bash
+psql -U postgres -c "DROP DATABASE horse_races;"
+psql -U postgres -f db/init_db.sql
+```
+
+The application configuration (in `config.py`) defaults to use the
+`horse_races_admin` account; you can override the connection string by
+setting `DATABASE_URL`.
+
+If you do not have PostgreSQL available, the project will fall back to
+SQLite: simply running the app will create a local
+`horse_races.db` with the required schema.
+
+To explicitly create the database via the Python code (for either
+backend) run:
 
 ```bash
 python app.py
 ```
 
-This will:
-1. Create `horse_races.db` SQLite database file
-2. Create all required tables
+That command will:
+1. Connect to the configured database (Postgres or SQLite)
+2. Create any missing tables
 3. Start the Flask development server
 
 ### Step 3: Access the Application
@@ -135,12 +156,23 @@ app/
 
 ## ⚙️ Configuration
 
-Edit `config.py` to change:
+Edit `config.py` (or set environment variables) to change the
+connection details:
 
-- **Database URL**: `SQLALCHEMY_DATABASE_URI`
-  - SQLite (default): `sqlite:///horse_races.db`
-  - PostgreSQL: `postgresql://user:password@localhost/dbname`
-  - MySQL: `mysql://user:password@localhost/dbname`
+- *Database URL*: `SQLALCHEMY_DATABASE_URI` (constructed from the
+  following individual variables unless you override with
+  `DATABASE_URL`)
+  - `DB_USER` (default: `horse_races_admin`)
+  - `DB_PASS` (empty by default)
+  - `DB_HOST` (default: `localhost`)
+  - `DB_PORT` (default: `5432`)
+  - `DB_NAME` (default: `horse_races`)
+
+You can still point the app at a local SQLite file by setting the URL
+explicitly:
+```
+export DATABASE_URL=sqlite:///horse_races.db
+```
   
 - **Secret Key**: `SECRET_KEY` (change for production!)
 

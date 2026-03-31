@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_migrate import Migrate
 from datetime import datetime
 from config import Config
-from models import db, Owner, Horse, Jockey, Race, RaceEntry
+from models import db, Host, Horse, Jockey, Race, RaceResult
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -20,38 +20,40 @@ def inject_now():
 @app.route('/')
 def index():
     """Main page - list all races"""
-    races = Race.query.order_by(Race.date.desc()).all()
+    races = Race.query.all()
     return render_template('index.html', races=races)
 
 
-@app.route('/owners')
-def owners():
-    """List all horse owners"""
-    owners_list = Owner.query.all()
-    return render_template('owners.html', owners=owners_list)
+@app.route('/hosts')
+def hosts():
+    """List all hosts (owners)"""
+    hosts_list = Host.query.all()
+    return render_template('hosts.html', hosts=hosts_list)
 
 
-@app.route('/owners/add', methods=['GET', 'POST'])
-def add_owner():
-    """Add new owner"""
+@app.route('/hosts/add', methods=['GET', 'POST'])
+def add_host():
+    """Add a new host (owner)"""
     if request.method == 'POST':
-        name = request.form.get('name')
-        if not name:
-            flash('Please enter owner name', 'error')
-            return redirect(url_for('add_owner'))
+        first = request.form.get('host_name')
+        last = request.form.get('surname')
+        if not first or not last:
+            flash('Please enter both first name and surname', 'error')
+            return redirect(url_for('add_host'))
         
-        owner = Owner.query.filter_by(name=name).first()
-        if owner:
-            flash('Owner already exists', 'error')
-            return redirect(url_for('add_owner'))
+        # check duplicate by full name
+        existing = Host.query.filter_by(host_name=first, surname=last).first()
+        if existing:
+            flash('Host already exists', 'error')
+            return redirect(url_for('add_host'))
         
-        new_owner = Owner(name=name)
-        db.session.add(new_owner)
+        new_host = Host(host_name=first, surname=last)
+        db.session.add(new_host)
         db.session.commit()
-        flash(f'Owner {name} added successfully', 'success')
-        return redirect(url_for('owners'))
+        flash(f'Host {new_host.name} added successfully', 'success')
+        return redirect(url_for('hosts'))
     
-    return render_template('add_owner.html')
+    return render_template('add_host.html')
 
 
 @app.route('/horses')
@@ -64,23 +66,23 @@ def horses():
 @app.route('/horses/add', methods=['GET', 'POST'])
 def add_horse():
     """Add new horse"""
-    owners_list = Owner.query.all()
+    hosts_list = Host.query.all()
     
     if request.method == 'POST':
         name = request.form.get('name')
         rating = request.form.get('rating', 0)
-        owner_id = request.form.get('owner_id')
+        host_id = request.form.get('host_id')
         
-        if not name or not owner_id:
+        if not name or not host_id:
             flash('Please fill all fields', 'error')
             return redirect(url_for('add_horse'))
         
-        if Horse.query.filter_by(name=name).first():
+        if Horse.query.filter_by(horse_name=name).first():
             flash('Horse already exists', 'error')
             return redirect(url_for('add_horse'))
         
         try:
-            new_horse = Horse(name=name, rating=float(rating), owner_id=int(owner_id))
+            new_horse = Horse(horse_name=name, rating=int(rating), host_id=int(host_id))
             db.session.add(new_horse)
             db.session.commit()
             flash(f'Horse {name} added successfully', 'success')
@@ -90,7 +92,7 @@ def add_horse():
             flash(f'Error: {str(e)}', 'error')
             return redirect(url_for('add_horse'))
     
-    return render_template('add_horse.html', owners=owners_list)
+    return render_template('add_horse.html', hosts=hosts_list)
 
 
 @app.route('/jockeys')
@@ -132,7 +134,7 @@ def add_jockey():
 @app.route('/races')
 def races():
     """List all races"""
-    races_list = Race.query.order_by(Race.date.desc()).all()
+    races_list = Race.query.all()
     return render_template('races.html', races=races_list)
 
 
@@ -151,7 +153,8 @@ def add_race():
         
         try:
             race_date = datetime.fromisoformat(date_str)
-            new_race = Race(date=race_date)
+            # ``Race`` expects a date object (field is race_date)
+            new_race = Race(race_date=race_date.date())
             db.session.add(new_race)
             db.session.flush()  # Get the race ID
             
@@ -162,7 +165,7 @@ def add_race():
                 jockey_id = request.form.get(f'jockey_{i}')
                 
                 if horse_id and jockey_id:
-                    entry = RaceEntry(
+                    entry = RaceResult(
                         race_id=new_race.id,
                         horse_id=int(horse_id),
                         jockey_id=int(jockey_id),
@@ -201,7 +204,7 @@ def edit_race_results(race_id):
     
     if request.method == 'POST':
         try:
-            for entry in race.entries:
+            for entry in race.results:
                 place_str = request.form.get(f'place_{entry.id}')
                 if place_str:
                     entry.place = int(place_str)
@@ -229,6 +232,12 @@ def server_error(error):
 
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
+    # Only call ``create_all`` when using the default sqlite backend.  The
+    # PostgreSQL database should be created (and tables migrated) via the
+    # `db/init_db.sql` script and Alembic; running ``create_all`` against a
+    # production Postgres instance may inadvertently drop or modify data.
+    uri = app.config.get('SQLALCHEMY_DATABASE_URI', '')
+    if uri.startswith('sqlite'):
+        with app.app_context():
+            db.create_all()
     app.run(debug=True)

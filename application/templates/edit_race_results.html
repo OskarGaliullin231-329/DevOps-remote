@@ -15,24 +15,24 @@
     <h3 style="margin-top: 30px; margin-bottom: 20px;">Enter Placements</h3>
     
     <form method="POST" style="max-width: 900px;">
-        {% if race.entries %}
+        {% if race.results %}
             <table>
                 <thead>
                     <tr>
                         <th>Horse</th>
-                        <th>Owner</th>
+                        <th>Host</th>
                         <th>Jockey</th>
                         <th>Placement</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for entry in race.entries %}
+                    {% for entry in race.results %}
                         <tr>
                             <td>
                                 <strong>{{ entry.horse.name }}</strong>
                             </td>
                             <td>
-                                {{ entry.horse.owner.name if entry.horse.owner else 'N/A' }}
+                                {{ entry.horse.host.name if entry.horse.host else 'N/A' }}
                             </td>
                             <td>
                                 <strong>{{ entry.jockey.name }}</strong>

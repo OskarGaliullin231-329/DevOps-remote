@@ -1,0 +1,37 @@
+FROM postgres:17-alpine
+
+# Копируем коллекцию SQL скриптов из каталога db/init
+# Все файлы внутри /docker-entrypoint-initdb.d будут запущены при первом запуске,
+# порядок определяется лексикографическим именованием (00‑…, 01‑…, и т.д.).
+COPY db/init/ /docker-entrypoint-initdb.d/
+
+# Создаем скрипт проверки и инициализации БД
+RUN cat <<'SCRIPT' > /docker-entrypoint-initdb.d/00-check-db.sh
+#!/bin/bash
+set -e
+
+echo "================================"
+echo "PostgreSQL Database Initialization"
+echo "================================"
+
+# Проверяем существует ли база данных
+if psql -U "$POSTGRES_USER" -lqt | cut -d "|" -f 1 | grep -qw "$POSTGRES_DB"; then
+  echo "[✓] Database '$POSTGRES_DB' already exists. Skipping initialization."
+else
+  echo "[→] Database '$POSTGRES_DB' not found. Initialization will run through all SQL files."
+  for script in /docker-entrypoint-initdb.d/*.sql; do
+    echo "[→] Executing: $script"
+  done
+fi
+
+echo "================================"
+SCRIPT
+RUN chmod +x /docker-entrypoint-initdb.d/00-check-db.sh
+
+# Устанавливаем переменные окружения
+ENV POSTGRES_DB=horse_races
+ENV POSTGRES_USER=horse_races_admin
+ENV POSTGRES_PASSWORD=hr_pass
+ENV POSTGRES_INITDB_ARGS="--encoding UTF8"
+
+# CMD ["psql", "-U", "horse_races_admin", "-d", "horse_races", "-a", "-f", "/docker-entrypoint-initdb.d/01-init-tables.sql"]

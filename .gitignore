@@ -6,6 +6,7 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 ENV/
 build/
 develop-eggs/
@@ -48,3 +49,7 @@ instance/
 
 # Alembic
 alembic/versions/*.pyc
+
+.ssh/
+
+teamcity/

@@ -13,11 +13,11 @@
         
         <div class="form-row">
             <div class="form-group">
-                <label for="owner_id">Owner *</label>
-                <select id="owner_id" name="owner_id" required>
-                    <option value="">Select owner...</option>
-                    {% for owner in owners %}
-                        <option value="{{ owner.id }}">{{ owner.name }}</option>
+                <label for="host_id">Host *</label>
+                <select id="host_id" name="host_id" required>
+                    <option value="">Select host...</option>
+                    {% for host in hosts %}
+                        <option value="{{ host.id }}">{{ host.name }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -34,9 +34,9 @@
         </div>
     </form>
     
-    {% if not owners %}
+    {% if not hosts %}
         <div class="alert alert-info" style="margin-top: 20px;">
-            <strong>Note:</strong> You need to <a href="{{ url_for('add_owner') }}">add an owner first</a> before creating a horse.
+            <strong>Note:</strong> You need to <a href="{{ url_for('add_host') }}">add a host first</a> before creating a horse.
         </div>
     {% endif %}
 {% endblock %}
