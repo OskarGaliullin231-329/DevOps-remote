@@ -1,0 +1,35 @@
+services:
+  teamcity-server:
+    image: jetbrains/teamcity-server:latest          # или укажи конкретную версию, например :2025.11
+    container_name: teamcity-server
+    restart: unless-stopped
+    ports:
+      - "8111:8111"                                  # веб-интерфейс TeamCity
+    volumes:
+      - ./teamcity/server/data:/data/teamcity_server/datadir
+      - ./teamcity/server/logs:/opt/teamcity/logs
+    environment:
+      # Опционально: увеличиваем память сервера (по умолчанию мало для продакшена)
+      - TEAMCITY_SERVER_MEM_OPTS=-Xmx2g
+      # - TEAMCITY_SERVER_OPTS=...                   # другие JVM опции при необходимости
+
+  teamcity-agent:
+    image: jetbrains/teamcity-agent:latest           # полный агент с Git, Java и т.д.
+    # image: jetbrains/teamcity-minimal-agent:latest # если нужен минимальный агент
+    container_name: teamcity-agent
+    restart: unless-stopped
+    depends_on:
+      - teamcity-server
+    # user: 0:0
+    environment:
+      # Агент подключается к серверу по внутреннему имени сервиса
+      - SERVER_URL=http://teamcity-server:8111
+      # Имя агента в TeamCity (можно менять)
+      - AGENT_NAME=Main-Agent-Docker
+    volumes:
+      # Конфигурация агента (важно для сохранения авторизации)
+      - ./teamcity/agent/conf:/data/teamcity_agent/conf
+      # Опционально: даём агенту доступ к Docker хоста (для сборок с Docker/Docker Compose)
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Если хочешь монтировать work-директорию наружу:
+      - ./teamcity/agent/work:/opt/buildagent/work
