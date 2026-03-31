@@ -20,7 +20,7 @@ services:
     restart: unless-stopped
     depends_on:
       - teamcity-server
-    # user: 0:0
+    user: 0:0
     environment:
       # Агент подключается к серверу по внутреннему имени сервиса
       - SERVER_URL=http://teamcity-server:8111
