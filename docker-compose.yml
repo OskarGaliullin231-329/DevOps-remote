@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.postgres
+    image: postgres-image
     container_name: horse_races_db
     environment:
       POSTGRES_DB: horse_races
@@ -25,6 +26,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.app
+    image: app-image
     container_name: horse_races_app
     depends_on:
       postgres:
@@ -49,6 +51,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.nginx
+    image: nginx-image
     container_name: horse_races_nginx
     depends_on:
       - app
