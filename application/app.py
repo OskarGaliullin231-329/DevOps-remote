@@ -40,19 +40,19 @@ def add_host():
         if not first or not last:
             flash('Please enter both first name and surname', 'error')
             return redirect(url_for('add_host'))
-        
+
         # check duplicate by full name
         existing = Host.query.filter_by(host_name=first, surname=last).first()
         if existing:
             flash('Host already exists', 'error')
             return redirect(url_for('add_host'))
-        
+
         new_host = Host(host_name=first, surname=last)
         db.session.add(new_host)
         db.session.commit()
         flash(f'Host {new_host.name} added successfully', 'success')
         return redirect(url_for('hosts'))
-    
+
     return render_template('add_host.html')
 
 
@@ -67,22 +67,23 @@ def horses():
 def add_horse():
     """Add new horse"""
     hosts_list = Host.query.all()
-    
+
     if request.method == 'POST':
         name = request.form.get('name')
         rating = request.form.get('rating', 0)
         host_id = request.form.get('host_id')
-        
+
         if not name or not host_id:
             flash('Please fill all fields', 'error')
             return redirect(url_for('add_horse'))
-        
+
         if Horse.query.filter_by(horse_name=name).first():
             flash('Horse already exists', 'error')
             return redirect(url_for('add_horse'))
-        
+
         try:
-            new_horse = Horse(horse_name=name, rating=int(rating), host_id=int(host_id))
+            new_horse = Horse(horse_name=name, rating=int(
+                rating), host_id=int(host_id))
             db.session.add(new_horse)
             db.session.commit()
             flash(f'Horse {name} added successfully', 'success')
@@ -91,7 +92,7 @@ def add_horse():
             db.session.rollback()
             flash(f'Error: {str(e)}', 'error')
             return redirect(url_for('add_horse'))
-    
+
     return render_template('add_horse.html', hosts=hosts_list)
 
 
@@ -108,15 +109,15 @@ def add_jockey():
     if request.method == 'POST':
         name = request.form.get('name')
         rating = request.form.get('rating', 0)
-        
+
         if not name:
             flash('Please enter jockey name', 'error')
             return redirect(url_for('add_jockey'))
-        
+
         if Jockey.query.filter_by(name=name).first():
             flash('Jockey already exists', 'error')
             return redirect(url_for('add_jockey'))
-        
+
         try:
             new_jockey = Jockey(name=name, rating=float(rating))
             db.session.add(new_jockey)
@@ -127,7 +128,7 @@ def add_jockey():
             db.session.rollback()
             flash(f'Error: {str(e)}', 'error')
             return redirect(url_for('add_jockey'))
-    
+
     return render_template('add_jockey.html')
 
 
@@ -143,27 +144,27 @@ def add_race():
     """Add new race"""
     horses_list = Horse.query.all()
     jockeys_list = Jockey.query.all()
-    
+
     if request.method == 'POST':
         date_str = request.form.get('date')
-        
+
         if not date_str:
             flash('Please enter race date', 'error')
             return redirect(url_for('add_race'))
-        
+
         try:
             race_date = datetime.fromisoformat(date_str)
             # ``Race`` expects a date object (field is race_date)
             new_race = Race(race_date=race_date.date())
             db.session.add(new_race)
             db.session.flush()  # Get the race ID
-            
+
             # Add race entries
             entries_added = 0
             for i in range(10):  # Support up to 10 entries
                 horse_id = request.form.get(f'horse_{i}')
                 jockey_id = request.form.get(f'jockey_{i}')
-                
+
                 if horse_id and jockey_id:
                     entry = RaceResult(
                         race_id=new_race.id,
@@ -173,20 +174,21 @@ def add_race():
                     )
                     db.session.add(entry)
                     entries_added += 1
-            
+
             if entries_added == 0:
                 db.session.rollback()
                 flash('Please add at least one horse-jockey pair', 'error')
                 return redirect(url_for('add_race'))
-            
+
             db.session.commit()
-            flash(f'Race created successfully with {entries_added} entries', 'success')
+            flash(
+                f'Race created successfully with {entries_added} entries', 'success')
             return redirect(url_for('races'))
         except Exception as e:
             db.session.rollback()
             flash(f'Error: {str(e)}', 'error')
             return redirect(url_for('add_race'))
-    
+
     return render_template('add_race.html', horses=horses_list, jockeys=jockeys_list)
 
 
@@ -201,21 +203,21 @@ def race_detail(race_id):
 def edit_race_results(race_id):
     """Edit race results (placements)"""
     race = Race.query.get_or_404(race_id)
-    
+
     if request.method == 'POST':
         try:
             for entry in race.results:
                 place_str = request.form.get(f'place_{entry.id}')
                 if place_str:
                     entry.place = int(place_str)
-            
+
             db.session.commit()
             flash('Race results updated successfully', 'success')
             return redirect(url_for('race_detail', race_id=race_id))
         except Exception as e:
             db.session.rollback()
             flash(f'Error: {str(e)}', 'error')
-    
+
     return render_template('edit_race_results.html', race=race)
 
 

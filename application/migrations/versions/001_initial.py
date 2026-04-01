@@ -68,7 +68,8 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(['jockey_id'], ['jockeys.id'], ),
         sa.ForeignKeyConstraint(['race_id'], ['races.id'], ),
         sa.PrimaryKeyConstraint('id'),
-        sa.UniqueConstraint('race_id', 'jockey_id', 'horse_id', name='unique_race_entry')
+        sa.UniqueConstraint('race_id', 'jockey_id',
+                            'horse_id', name='unique_race_entry')
     )
 
 

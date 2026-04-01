@@ -1,5 +1,7 @@
 """Flask-Migrate environment script."""
 
+from app import app
+from models import db
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -16,8 +18,6 @@ project_root = str(Path(__file__).parent.parent)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from models import db
-from app import app
 
 config = context.config
 
@@ -26,8 +26,10 @@ if config.config_file_name is not None:
 
 # Set SQLAlchemy URL from Flask config
 with app.app_context():
-    config.set_main_option('sqlalchemy.url', app.config['SQLALCHEMY_DATABASE_URI'])
+    config.set_main_option(
+        'sqlalchemy.url', app.config['SQLALCHEMY_DATABASE_URI'])
     target_metadata = db.metadata
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""
@@ -47,7 +49,7 @@ def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = config.get_main_option('sqlalchemy.url')
-    
+
     connectable = engine_from_config(
         configuration,
         prefix="sqlalchemy.",
