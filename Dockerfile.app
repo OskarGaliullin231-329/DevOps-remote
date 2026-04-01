@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем всё приложение
-COPY . .
+COPY application /app
 
 # Создаем entrypoint скрипт для инициализации и запуска приложения
 RUN echo '#!/bin/bash\n\
@@ -26,7 +26,7 @@ done\n\
 echo "PostgreSQL is ready!"\n\
 \n\
 echo "Initializing sample data..."\n\
-python init_data.py\n\
+python /app/init_data.py\n\
 \n\
 echo "Starting Gunicorn server..."\n\
 exec gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 60 app:app\n\
