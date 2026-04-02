@@ -1,5 +1,3 @@
-from models import db
-from app import app
 import sys
 import os
 import pytest
@@ -13,8 +11,9 @@ sys.path.insert(0, os.path.join(project_root, 'app'))
 os.environ['DATABASE_URL'] = 'sqlite:///:memory:'
 os.environ['FLASK_ENV'] = 'testing'
 
-# Импортируем приложение и модели до создания фикстур
-
+# Импортируем приложение и модели после настройки sys.path
+from models import db
+from app import app
 
 @pytest.fixture(scope='session')
 def flask_app():
