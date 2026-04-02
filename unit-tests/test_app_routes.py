@@ -24,3 +24,9 @@ def test_valid_paths_return_200_and_non_empty_body(client):
 def test_invalid_path_returns_404(client):
     response = client.get('/path-not-found-123')
     assert response.status_code == 404
+
+
+def test_failing_test_root_returns_404(client):
+    """Этот тест заведомо упадёт, потому что корневой путь возвращает 200, а не 404"""
+    response = client.get('/')
+    assert response.status_code == 404, "Корневой путь должен возвращать 404, но возвращает 200"
