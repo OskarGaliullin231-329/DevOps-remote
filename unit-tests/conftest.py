@@ -1,3 +1,5 @@
+from models import db
+from app import app
 import sys
 import os
 import pytest
@@ -12,8 +14,6 @@ os.environ['DATABASE_URL'] = 'sqlite:///:memory:'
 os.environ['FLASK_ENV'] = 'testing'
 
 # Импортируем приложение и модели до создания фикстур
-from app import app
-from models import db
 
 
 @pytest.fixture(scope='session')
@@ -22,7 +22,7 @@ def flask_app():
     app.config['TESTING'] = True
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    
+
     return app
 
 
@@ -33,9 +33,9 @@ def client(flask_app):
         # Создаём таблицы в памяти для каждого теста
         # (db уже инициализирована в app.py)
         db.create_all()
-        
+
         yield flask_app.test_client()
-        
+
         # Очищаем данные после теста
         db.session.remove()
         db.drop_all()
