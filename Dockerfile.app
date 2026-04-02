@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем всё приложение
-COPY application /app
+COPY app /app
 
 # Создаем entrypoint скрипт для инициализации и запуска приложения
 RUN echo '#!/bin/bash\n\
