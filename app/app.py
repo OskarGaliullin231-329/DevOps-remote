@@ -1,10 +1,16 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_migrate import Migrate
 from datetime import datetime
 from config import Config
 from models import db, Host, Horse, Jockey, Race, RaceResult
 
-app = Flask(__name__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+app = Flask(
+    __name__,
+    template_folder=os.path.join(BASE_DIR, 'templates'),
+    static_folder=os.path.join(BASE_DIR, 'static')
+)
 app.config.from_object(Config)
 
 db.init_app(app)
