@@ -26,7 +26,7 @@ done\n\
 echo "PostgreSQL is ready!"\n\
 \n\
 echo "Initializing sample data..."\n\
-python /app/init_data.py\n\
+python init_data.py\n\
 \n\
 echo "Starting Gunicorn server..."\n\
 exec gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 60 app:app\n\
