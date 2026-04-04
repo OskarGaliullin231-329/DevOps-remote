@@ -8,34 +8,34 @@ grant all privileges on all sequences in schema public to horse_races_admin;
 
 \connect horse_races
 
-create table hosts (
+create table public.hosts (
     id        serial primary key,
     host_name varchar(255),
     surname   varchar(255)
 );
 
-create table jockeys (
+create table public.jockeys (
     id          serial primary key,
     jockey_name varchar(255) not null,
     rating      integer
 );
 
-create table races (
+create table public.races (
     id        serial primary key,
     race_date date not null
 );
 
-create table horses (
+create table public.horses (
     id         serial primary key,
-    host_id    integer not null references hosts(id),
+    host_id    integer not null references public.hosts(id),
     horse_name varchar(255) not null,
     rating     integer
 );
 
-create table races_results (
+create table public.races_results (
     id        serial primary key,
-    horse_id  integer not null references horses(id),
-    jockey_id integer not null references jockeys(id),
-    race_id   integer not null references races(id),
+    horse_id  integer not null references public.horses(id),
+    jockey_id integer not null references public.jockeys(id),
+    race_id   integer not null references public.races(id),
     place     integer
 );
