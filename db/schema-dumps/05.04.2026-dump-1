@@ -1,0 +1,315 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict J7AZ4EE1PBtF8DmE96jXqYo3v7gv204vZyGh4hpHITSwwVrBswvvVVJsaoD5xfp
+
+-- Dumped from database version 18.1
+-- Dumped by pg_dump version 18.1
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: horses; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.horses (
+    id integer NOT NULL,
+    host_id integer NOT NULL,
+    horse_name character varying(255) NOT NULL,
+    rating integer
+);
+
+
+ALTER TABLE public.horses OWNER TO postgres;
+
+--
+-- Name: horses_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.horses_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.horses_id_seq OWNER TO postgres;
+
+--
+-- Name: horses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.horses_id_seq OWNED BY public.horses.id;
+
+
+--
+-- Name: hosts; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.hosts (
+    id integer NOT NULL,
+    host_name character varying(255),
+    surname character varying(255)
+);
+
+
+ALTER TABLE public.hosts OWNER TO postgres;
+
+--
+-- Name: hosts_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.hosts_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.hosts_id_seq OWNER TO postgres;
+
+--
+-- Name: hosts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.hosts_id_seq OWNED BY public.hosts.id;
+
+
+--
+-- Name: jockeys; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.jockeys (
+    id integer NOT NULL,
+    jockey_name character varying(255) NOT NULL,
+    rating integer
+);
+
+
+ALTER TABLE public.jockeys OWNER TO postgres;
+
+--
+-- Name: jockeys_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.jockeys_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.jockeys_id_seq OWNER TO postgres;
+
+--
+-- Name: jockeys_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.jockeys_id_seq OWNED BY public.jockeys.id;
+
+
+--
+-- Name: races; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.races (
+    id integer NOT NULL,
+    race_date date NOT NULL
+);
+
+
+ALTER TABLE public.races OWNER TO postgres;
+
+--
+-- Name: races_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.races_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.races_id_seq OWNER TO postgres;
+
+--
+-- Name: races_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.races_id_seq OWNED BY public.races.id;
+
+
+--
+-- Name: races_results; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.races_results (
+    id integer NOT NULL,
+    horse_id integer NOT NULL,
+    jockey_id integer NOT NULL,
+    race_id integer NOT NULL,
+    place integer
+);
+
+
+ALTER TABLE public.races_results OWNER TO postgres;
+
+--
+-- Name: races_results_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE public.races_results_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER SEQUENCE public.races_results_id_seq OWNER TO postgres;
+
+--
+-- Name: races_results_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE public.races_results_id_seq OWNED BY public.races_results.id;
+
+
+--
+-- Name: horses id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.horses ALTER COLUMN id SET DEFAULT nextval('public.horses_id_seq'::regclass);
+
+
+--
+-- Name: hosts id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.hosts ALTER COLUMN id SET DEFAULT nextval('public.hosts_id_seq'::regclass);
+
+
+--
+-- Name: jockeys id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.jockeys ALTER COLUMN id SET DEFAULT nextval('public.jockeys_id_seq'::regclass);
+
+
+--
+-- Name: races id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.races ALTER COLUMN id SET DEFAULT nextval('public.races_id_seq'::regclass);
+
+
+--
+-- Name: races_results id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.races_results ALTER COLUMN id SET DEFAULT nextval('public.races_results_id_seq'::regclass);
+
+
+--
+-- Name: horses horses_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.horses
+    ADD CONSTRAINT horses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: hosts hosts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.hosts
+    ADD CONSTRAINT hosts_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: jockeys jockeys_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.jockeys
+    ADD CONSTRAINT jockeys_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: races races_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.races
+    ADD CONSTRAINT races_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: races_results races_results_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.races_results
+    ADD CONSTRAINT races_results_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: horses horses_host_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.horses
+    ADD CONSTRAINT horses_host_id_fkey FOREIGN KEY (host_id) REFERENCES public.hosts(id);
+
+
+--
+-- Name: races_results races_results_horse_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.races_results
+    ADD CONSTRAINT races_results_horse_id_fkey FOREIGN KEY (horse_id) REFERENCES public.horses(id);
+
+
+--
+-- Name: races_results races_results_jockey_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.races_results
+    ADD CONSTRAINT races_results_jockey_id_fkey FOREIGN KEY (jockey_id) REFERENCES public.jockeys(id);
+
+
+--
+-- Name: races_results races_results_race_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.races_results
+    ADD CONSTRAINT races_results_race_id_fkey FOREIGN KEY (race_id) REFERENCES public.races(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict J7AZ4EE1PBtF8DmE96jXqYo3v7gv204vZyGh4hpHITSwwVrBswvvVVJsaoD5xfp
+
