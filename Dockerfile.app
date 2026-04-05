@@ -1,6 +1,6 @@
 FROM python:3.14-slim-trixie
 
-WORKDIR /app
+WORKDIR /
 
 # Устанавливаем зависимости системы для PostgreSQL
 RUN apt-get update && apt-get install -y \
@@ -8,8 +8,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Копируем requirements и устанавливаем зависимости Python
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt /requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
 
 # Копируем всё приложение
 COPY app /app
@@ -26,10 +26,10 @@ done\n\
 echo "PostgreSQL is ready!"\n\
 \n\
 echo "Initializing sample data..."\n\
-python /app/init_data.py\n\
+python -m app.init_data\n\
 \n\
 echo "Starting Gunicorn server..."\n\
-exec gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 60 app:app\n\
+exec gunicorn --bind 0.0.0.0:5000 --workers 4 --timeout 60 app.app:app\n\
 ' > /entrypoint.sh && chmod +x /entrypoint.sh
 
 # Переменные окружения по умолчанию
@@ -39,6 +39,8 @@ ENV DB_HOST=postgres
 ENV DB_PORT=5432
 ENV DB_NAME=horse_races
 ENV PYTHONUNBUFFERED=1
+ENV FLASK_APP=app.app
+ENV PYTHONPATH=/ 
 
 EXPOSE 5000
 

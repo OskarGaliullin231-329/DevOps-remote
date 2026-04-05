@@ -1,11 +1,11 @@
 """
 Sample data initialization script - OPTIONAL
 This script populates the database with sample data for testing.
-Run with: python init_data.py
+Run with: python -m app.init_data
 """
 
 from app import app, db
-from models import Host, Horse, Jockey, Race, RaceResult
+from app.models import Host, Horse, Jockey, Race, RaceResult
 from datetime import datetime, timedelta
 
 
